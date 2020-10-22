@@ -1,17 +1,17 @@
-import { MatchReader } from './inheritance/MatchReader';
-import { MatchResult } from './MatchResult';
+import { MatchReader } from './MatchReader';
+import { CsvFileReader } from './CsvFileReader';
+import { ConsoleReport } from './reportTargets/ConsoleReports';
+import { WinsAnalysis } from './analyzers/WinsAnalysis';
+import { Summery } from './Summery';
 
-const reader = new MatchReader('football.csv');
-reader.read();
+const csvFileReader = new CsvFileReader('football.csv');
 
-let manUnitedWins = 0;
+const matchReader = new MatchReader(csvFileReader);
+matchReader.load();
 
-for (let match of reader.data) {
-  if (match[1] === 'Man United' && match[5] === MatchResult.HomeWin) {
-    manUnitedWins++;
-  } else if (match[2] === 'Man United' && match[5] === MatchResult.AwayWin) {
-    manUnitedWins++;
-  }
-}
+const summery = new Summery(
+  new WinsAnalysis('Man United'),
+  new ConsoleReport()
+);
 
-console.log(`Man United won ${manUnitedWins} games`);
+summery.buildAndPrintReport(matchReader.matches);
